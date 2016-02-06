@@ -1,5 +1,6 @@
 var express = require('express');
 var db = require('./db');
+var connection = require('./db/index.js').connection;
 
 // Middleware
 var morgan = require('morgan');
@@ -10,6 +11,15 @@ var router = require('./routes.js');
 
 var app = express();
 module.exports.app = app;
+
+// Connect to database
+connection.connect(function(err){
+  if (err){
+    console.log('error connecting: ' + err.stack);
+    return;
+  }
+  console.log('Connected to database as id ' + connection.threadId);
+});
 
 // Set what we are listening on.
 app.set("port", 3000);
