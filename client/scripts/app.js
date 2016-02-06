@@ -45,6 +45,7 @@ $(document).ready(function() {
         type: 'GET',
         contentType: 'application/json',
         success: function (data){
+          data = JSON.parse(data);
           app.selectRoom(data);
           app.stopSpinner(); 
           console.log('chatterbox: Messages received. Data: ', data);
@@ -63,17 +64,17 @@ $(document).ready(function() {
 
     //
     populate: function(data) {
-      for(var i = 0; i < data.results.length; i++) {
+      for(var i = 0; i < data.length; i++) {  //removed results
         var user = $('<span class="username"></span>');
-        user.text(data.results[i].username || 'anonymous');
+        user.text(data[i].username || 'anonymous'); //removed results
         var msg= $('<span></span>');
         for(var j=0;j<friendsList.length;j++){
-          if(data.results[i].username===friendsList[j]){
+          if(data[i].username===friendsList[j]){  //removed results
             var msg= $('<span class="friend"></span>');
             break;
           }
         }   
-        msg.text(data.results[i].text || '');
+        msg.text(data[i].message || '');  //removed results
         var line = $('<div class="chat"></div>');
         line.append(user);
         line.append(': ');
@@ -86,7 +87,7 @@ $(document).ready(function() {
       var user = $('<span class="username"></span>');
       user.text(message.username || 'anonymous');
       var msg = $('<span></span>');
-      msg.text(message.text || '');
+      msg.text(message.message || '');
       var line = $('<div class="chat"></div>');
       line.append(user);
       line.append(': ');
@@ -98,7 +99,7 @@ $(document).ready(function() {
       var value = $("#send").val();
       var message = {
        username: username,
-       text: value,
+       message: value,
        roomname: $('#roomSelect option:selected').val()
       };
       app.send(message);
@@ -112,9 +113,10 @@ $(document).ready(function() {
         type: 'GET',
         contentType: 'application/json',
         success: function (data){
-          for(var i = 0; i < data.results.length; i++) {
-            if (!rooms[data.results[i].roomname]) {
-              rooms[data.results[i].roomname] = data.results[i].roomname;
+          data = JSON.parse(data);
+          for(var i = 0; i < data.length; i++) {  //removed results.
+            if (!rooms[data[i].roomname]) {
+              rooms[data[i].roomname] = data[i].roomname;
             }
           }
           for (var key in rooms) {
@@ -140,13 +142,11 @@ $(document).ready(function() {
     },
 
     selectRoom: function(data) {
-      var roomMessages = {
-        results: []
-      };
+      var roomMessages = [];
       var selected = $('#roomSelect option:selected').val() || 'lobby';
-      for(var i=0;i<data.results.length;i++){
-        if(data.results[i].roomname===selected){
-          roomMessages.results.push(data.results[i])
+      for(var i=0;i<data.length;i++){  //removed .results from data
+        if(data[i].roomname===selected){
+          roomMessages.push(data[i])
         }
       }
       app.clearMessages();
